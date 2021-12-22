@@ -16,6 +16,6 @@ static HELLO: &[u8] = b"Hello World!";
 pub extern "C" fn _start() -> ! {
     //Entrypoint since the Linker looks for a function
     // named _start (LLVM Linker) by default
-    vga_buffer::print_something();
+    println!("Hello World!{}", " from the println! macro.");
     loop {}
 }
