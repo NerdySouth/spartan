@@ -7,11 +7,22 @@
 
 use core::panic::PanicInfo;
 mod vga_buffer;
+mod serial;
 
 //called on panic
+#[cfg(not(test))]  //use this panic handler when not running tests
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     println!("{}", _info);
+    loop {}
+}
+
+#[cfg(test)] // use this panic handler when running tests
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    serial_println!("[failed]\n");
+    serial_println!("Error: {}\n", info);
+    exit_qemu(QemuExitCode::Failure);
     loop {}
 }
 
@@ -46,19 +57,36 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
     }
 }
 
+
 /*
  Test Framework functions
 
  */
 
+pub trait Testable {
+    fn run(&self) -> ();
+}
+
+impl<T> Testable for T
+where
+    T: Fn(),
+{
+    fn run(&self) {
+        //type_name of Fn() is the function's name
+        serial_print!("{}...\t", core::any::type_name::<T>());
+        self(); //works since we require that self implements the Fn() trait
+        serial_println!("[passed]");
+    }
+}
+
 #[cfg(test)]
-fn test_runner(tests: &[&dyn Fn()]) {
+fn test_runner(tests: &[&dyn Testable]) {
     if tests.len() == 0 {
         return
     }
-    println!("Running {} tests.", tests.len());
+    serial_println!("Running {} tests.", tests.len());
     for test in tests {
-        test();
+        test.run();
     }
 
     //exit after tests
@@ -67,7 +95,5 @@ fn test_runner(tests: &[&dyn Fn()]) {
 
 #[test_case]
 fn trivial_assert() {
-    print!("Trivial Assertion... ");
     assert_eq!(1, 1);
-    println!("[passed]");
 }
