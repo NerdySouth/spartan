@@ -7,6 +7,7 @@ mod vga_buffer;
 //called on panic
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
+    println!("{}", _info);
     loop {}
 }
 
@@ -16,6 +17,6 @@ static HELLO: &[u8] = b"Hello World!";
 pub extern "C" fn _start() -> ! {
     //Entrypoint since the Linker looks for a function
     // named _start (LLVM Linker) by default
-    println!("Hello World!{}", " from the println! macro.");
+    panic!("This is a panic!");
     loop {}
 }
