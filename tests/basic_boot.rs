@@ -21,12 +21,12 @@ fn panic(_info: &PanicInfo) -> !{
 
 ///test cases
 #[test_case]
-fn test_println() {
+fn test_println_after_boot() {
     spartan::println!("test_println output");
 }
 
 #[test_case]
-fn test_println_many() {
+fn test_println_many_after_boot() {
     for _ in 0..200 {
         println!("test_println_many output");
     }
