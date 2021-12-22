@@ -1,5 +1,6 @@
 use volatile::Volatile;
 use core::fmt;
+use lazy_static::lazy_static;
 
 // setup enum for color values
 #[allow(dead_code)]
@@ -62,6 +63,7 @@ pub struct Writer {
 }
 
 impl Writer {
+    //write a single byte to the VGA Text Buffer
     pub fn write_byte(&mut self, byte: u8) {
         match byte {
             b'\n' => self.new_line(),
@@ -83,6 +85,7 @@ impl Writer {
         }
     }
 
+    //write a string to the VGA Text Buffer using our write_byte function
     pub fn write_string(&mut self, s: &str) {
         for byte in s.bytes() {
             match byte {
@@ -94,11 +97,31 @@ impl Writer {
         }
     }
 
+    //write a newline character to the VGA Text Buffer
     fn new_line(&mut self) {
-        /* TODO: Implement!! */
+        for row in 1..BUFFER_HEIGHT {
+            for col in 0..BUFFER_WIDTH {
+                let character = self.buffer.chars[row][col].read();
+                self.buffer.chars[row - 1][col].write(character);
+            }
+        }
+        self.clear_row(BUFFER_HEIGHT - 1);
+        self.column_pos = 0;
+    }
+
+    //Clear a row after it has been moved for a new line
+    fn clear_row(&mut self, row: usize) {
+        let blank = ScreenChar {
+            ascii_character: b' ',
+            color_code: self.color_code,
+        };
+        for col in 0..BUFFER_WIDTH {
+            self.buffer.chars[row][col].write(blank);
+        }
     }
 }
 
+//enable write! and writeln! macros for Writer
 impl fmt::Write for Writer {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         self.write_string(s);
@@ -118,4 +141,13 @@ pub fn print_something() {
     // writer.write_string("ello ");
     // writer.write_string("World!");
     write!(writer, "This is written using Rust's write!() macro. Here are some numbers: {} and {}", 42, 1.0/3.0).unwrap();
+}
+
+//Create a static global writer interface
+lazy_static! {
+    pub static WRITER: Writer = Writer {
+        column_pos: 0,
+        color_code: ColorCode::new(Color::LightGreen, Color::Black),
+        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+    };
 }
