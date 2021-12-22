@@ -5,7 +5,7 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use spartan::{QemuExitCode, exit_qemu, serial_println};
+use spartan::{QemuExitCode, exit_qemu, serial_println, Green};
 use spartan::serial_print;
 
 
@@ -20,7 +20,7 @@ pub extern "C" fn _start() -> ! {
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
-    serial_println!("[passed]");
+    serial_println!("{}", Green("[passed]"));
     exit_qemu(QemuExitCode::Success);
     loop {}
 }
@@ -31,3 +31,16 @@ fn should_fail() {
     serial_print!("should_panic::should_fail...\t");
     assert_eq!(0, 1);
 }
+
+
+
+// pub struct Green(&'static str);
+
+// impl fmt::Display for Green {
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { 
+//         write!(f, "\x1B[32m")?; // prefix code
+//         write!(f, "{}", self.0)?;
+//         write!(f, "\x1B[0m")?; // postfix code
+//         Ok(())
+//     }
+// }

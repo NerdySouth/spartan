@@ -5,6 +5,7 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
+use core::fmt;
 pub mod serial;
 pub mod vga_buffer;
 
@@ -65,5 +66,16 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
     unsafe {
         let mut port = Port::new(0xf4);
         port.write(exit_code as u32);
+    }
+}
+
+pub struct Green(&'static str);
+
+impl fmt::Display for Green {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { 
+        write!(f, "\x1B[32m")?; // prefix code
+        write!(f, "{}", self.0)?;
+        write!(f, "\x1B[0m")?; // postfix code
+        Ok(())
     }
 }
