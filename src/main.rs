@@ -2,7 +2,7 @@
 #![no_main] //disables default Rust entrypoints
 
 use core::panic::PanicInfo;
-
+mod vga_buffer;
 
 //called on panic
 #[panic_handler]
@@ -16,14 +16,6 @@ static HELLO: &[u8] = b"Hello World!";
 pub extern "C" fn _start() -> ! {
     //Entrypoint since the Linker looks for a function
     // named _start (LLVM Linker) by default
-    let vga_buffer = 0xb8000 as *mut u8;
-
-    for (i, &byte) in HELLO.iter().enumerate() {
-        unsafe {
-            *vga_buffer.offset(i as isize * 2) = byte;
-            *vga_buffer.offset(i as isize * 2 + 1) = 0xb;
-        }
-    }
-
+    vga_buffer::print_something();
     loop {}
 }
