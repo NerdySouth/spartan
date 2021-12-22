@@ -1,3 +1,5 @@
+use volatile::Volatile;
+
 
 // setup enum for color values
 #[allow(dead_code)]
@@ -49,7 +51,7 @@ const BUFFER_WIDTH: usize = 80;
 
 #[repr(transparent)]
 struct Buffer {
-    chars: [[ScreenChar; BUFFER_WIDTH]; BUFFER_HEIGHT],
+    chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }
 
 //Writer interface for writing characters to the VGA Buffer
@@ -72,10 +74,10 @@ impl Writer {
                 let col = self.column_pos;
 
                 let color_code = self.color_code;
-                self.buffer.chars[row][col] = ScreenChar {
+                self.buffer.chars[row][col].write(ScreenChar {
                     ascii_character: byte,
                     color_code,
-                };
+                });
                 self.column_pos += 1;
             }
         }
