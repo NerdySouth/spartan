@@ -4,11 +4,37 @@
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+
 use core::panic::PanicInfo;
 use core::fmt;
 pub mod serial;
 pub mod vga_buffer;
 
+/// Color formatting  for test results
+struct Green(&'static str);
+
+impl fmt::Display for Green {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { 
+        write!(f, "\x1B[32m")?; // prefix code
+        write!(f, "{}", self.0)?;
+        write!(f, "\x1B[0m")?; // postfix code
+        Ok(())
+    }
+}
+
+struct Red(&'static str);
+
+impl fmt::Display for Red {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { 
+        write!(f, "\x1B[31m")?; // prefix code
+        write!(f, "{}", self.0)?;
+        write!(f, "\x1B[0m")?; // postfix code
+        Ok(())
+    }
+}
+
+
+/// Trait for testable functions
 pub trait Testable {
     fn run(&self) -> ();
 }
@@ -20,7 +46,7 @@ where
     fn run(&self) {
         serial_print!("{}...\t", core::any::type_name::<T>());
         self();
-        serial_println!("[ok]");
+        serial_println!("{}", Green("[ok]"));
     }
 }
 
@@ -33,7 +59,7 @@ pub fn test_runner(tests: &[&dyn Testable]) {
 }
 
 pub fn test_panic_handler(info: &PanicInfo) -> ! {
-    serial_println!("[failed]\n");
+    serial_println!("{}", Red("[failed]\n"));
     serial_println!("Error: {}\n", info);
     exit_qemu(QemuExitCode::Failure);
     loop {}
@@ -66,16 +92,5 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
     unsafe {
         let mut port = Port::new(0xf4);
         port.write(exit_code as u32);
-    }
-}
-
-pub struct Green(&'static str);
-
-impl fmt::Display for Green {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { 
-        write!(f, "\x1B[32m")?; // prefix code
-        write!(f, "{}", self.0)?;
-        write!(f, "\x1B[0m")?; // postfix code
-        Ok(())
     }
 }

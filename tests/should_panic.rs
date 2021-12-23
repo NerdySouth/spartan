@@ -5,14 +5,15 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use spartan::{QemuExitCode, exit_qemu, serial_println, Green};
+use spartan::{QemuExitCode, exit_qemu, serial_println};
 use spartan::serial_print;
+use core::fmt;
 
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     should_fail();
-    serial_println!("[test did not panic]");
+    serial_println!("{}", Red("[test did not panic]"));
     exit_qemu(QemuExitCode::Failure);
 
     loop {}
@@ -33,14 +34,23 @@ fn should_fail() {
 }
 
 
+/// Color formatting  for test results
+struct Green(&'static str);
+impl fmt::Display for Green {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { 
+        write!(f, "\x1B[32m")?; // prefix code
+        write!(f, "{}", self.0)?;
+        write!(f, "\x1B[0m")?; // postfix code
+        Ok(())
+    }
+}
 
-// pub struct Green(&'static str);
-
-// impl fmt::Display for Green {
-//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { 
-//         write!(f, "\x1B[32m")?; // prefix code
-//         write!(f, "{}", self.0)?;
-//         write!(f, "\x1B[0m")?; // postfix code
-//         Ok(())
-//     }
-// }
+struct Red(&'static str);
+impl fmt::Display for Red {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { 
+        write!(f, "\x1B[31m")?; // prefix code
+        write!(f, "{}", self.0)?;
+        write!(f, "\x1B[0m")?; // postfix code
+        Ok(())
+    }
+}

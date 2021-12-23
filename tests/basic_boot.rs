@@ -4,6 +4,7 @@
 #![test_runner(spartan::test_runner)]
 #![reexport_test_harness_main= "test_main"]
 
+
 use core::panic::PanicInfo;
 use spartan::println;
 
@@ -31,3 +32,4 @@ fn test_println_many_after_boot() {
         println!("test_println_many output");
     }
 }
+
