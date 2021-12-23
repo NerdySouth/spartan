@@ -1,7 +1,7 @@
-use volatile::Volatile;
 use core::fmt;
 use lazy_static::lazy_static;
 use spin::Mutex;
+use volatile::Volatile;
 
 // setup enum for color values
 #[allow(dead_code)]
@@ -26,7 +26,7 @@ pub enum Color {
     White = 15,
 }
 
-//setup full VGA Color codes with foreground and 
+//setup full VGA Color codes with foreground and
 //background bits
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(transparent)]
@@ -49,7 +49,6 @@ struct ScreenChar {
 //VGA screen size
 const BUFFER_HEIGHT: usize = 25;
 const BUFFER_WIDTH: usize = 80;
-
 
 #[repr(transparent)]
 struct Buffer {
@@ -130,7 +129,6 @@ impl fmt::Write for Writer {
     }
 }
 
-
 //Create a static global writer interface
 //uses spinlock mutex from spin crate for itnerior mutability while still being lazy_static
 lazy_static! {
@@ -158,7 +156,6 @@ pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     WRITER.lock().write_fmt(args).unwrap();
 }
-
 
 #[test_case]
 fn test_println_simple() {

@@ -20,7 +20,7 @@ pub extern "C" fn _start() -> ! {
 }
 
 //called on panic
-#[cfg(not(test))]  //use this panic handler when not running tests
+#[cfg(not(test))] //use this panic handler when not running tests
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     println!("{}", _info);

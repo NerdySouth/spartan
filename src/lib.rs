@@ -4,9 +4,8 @@
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-
-use core::panic::PanicInfo;
 use core::fmt;
+use core::panic::PanicInfo;
 pub mod serial;
 pub mod vga_buffer;
 
@@ -14,7 +13,7 @@ pub mod vga_buffer;
 struct Green(&'static str);
 
 impl fmt::Display for Green {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { 
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\x1B[32m")?; // prefix code
         write!(f, "{}", self.0)?;
         write!(f, "\x1B[0m")?; // postfix code
@@ -25,14 +24,13 @@ impl fmt::Display for Green {
 struct Red(&'static str);
 
 impl fmt::Display for Red {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { 
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\x1B[31m")?; // prefix code
         write!(f, "{}", self.0)?;
         write!(f, "\x1B[0m")?; // postfix code
         Ok(())
     }
 }
-
 
 /// Trait for testable functions
 pub trait Testable {
