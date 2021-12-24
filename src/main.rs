@@ -12,6 +12,11 @@ pub extern "C" fn _start() -> ! {
     //Entrypoint since the Linker looks for a function
     // named _start (LLVM Linker) by default
     println!("Hello world!");
+    //initalization routines
+    spartan::init(); 
+    //invoke a berakpoint exception
+    x86_64::instructions::interrupts::int3();
+
 
     #[cfg(test)]
     test_main();

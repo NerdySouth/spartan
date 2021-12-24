@@ -3,11 +3,14 @@
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
+#![feature(abi_x86_interrupt)]
 
 use core::fmt;
 use core::panic::PanicInfo;
+extern crate bit_field;
 pub mod serial;
 pub mod vga_buffer;
+mod interrupts;
 
 /// Color formatting  for test results
 struct Green(&'static str);
@@ -67,6 +70,7 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 #[cfg(test)]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    init();
     test_main();
     loop {}
 }
@@ -91,4 +95,9 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
         let mut port = Port::new(0xf4);
         port.write(exit_code as u32);
     }
+}
+
+/// initialization function for all initialization routines
+pub fn init() {
+    interrupts::init_idt();
 }
