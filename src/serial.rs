@@ -16,7 +16,7 @@ pub fn _print(args: ::core::fmt::Arguments) {
     SERIAL1
         .lock()
         .write_fmt(args)
-        .expect("Printing to serial failedd.");
+        .expect("Printing to serial failed.");
 }
 
 /// prints to host via the serial interface

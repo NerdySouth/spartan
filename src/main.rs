@@ -13,10 +13,14 @@ pub extern "C" fn _start() -> ! {
     // named _start (LLVM Linker) by default
     println!("Hello world!");
     //initalization routines
-    spartan::init(); 
-    //invoke a berakpoint exception
-    x86_64::instructions::interrupts::int3();
+    spartan::init();
 
+    fn stack_overflow() {
+        stack_overflow(); // for each recursion, the return address is pushed
+    }
+
+    // trigger a stack overflow
+    stack_overflow();
 
     #[cfg(test)]
     test_main();

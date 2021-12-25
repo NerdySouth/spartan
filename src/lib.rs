@@ -8,9 +8,11 @@
 use core::fmt;
 use core::panic::PanicInfo;
 extern crate bit_field;
+
+pub mod gdt;
+mod interrupts;
 pub mod serial;
 pub mod vga_buffer;
-mod interrupts;
 
 /// Color formatting  for test results
 struct Green(&'static str);
@@ -99,5 +101,6 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
 
 /// initialization function for all initialization routines
 pub fn init() {
+    gdt::init();
     interrupts::init_idt();
 }
