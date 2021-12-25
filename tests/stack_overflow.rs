@@ -2,9 +2,8 @@
 #![no_main]
 #![feature(abi_x86_interrupt)]
 
-
-use core::panic::PanicInfo;
 use core::fmt;
+use core::panic::PanicInfo;
 use lazy_static::lazy_static;
 use spartan::{exit_qemu, serial_print, serial_println, QemuExitCode};
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};

@@ -15,17 +15,10 @@ pub extern "C" fn _start() -> ! {
     //initalization routines
     spartan::init();
 
-    fn stack_overflow() {
-        stack_overflow(); // for each recursion, the return address is pushed
-    }
-
-    // trigger a stack overflow
-    stack_overflow();
-
     #[cfg(test)]
     test_main();
 
-    loop {}
+    spartan::halt();
 }
 
 //called on panic
@@ -33,11 +26,12 @@ pub extern "C" fn _start() -> ! {
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     println!("{}", _info);
-    loop {}
+    spartan::halt();
 }
 
 #[cfg(test)] // use this panic handler when running tests
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     spartan::test_panic_handler(_info);
+    spartan::halt();
 }
