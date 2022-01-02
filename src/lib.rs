@@ -11,6 +11,7 @@ extern crate bit_field;
 
 pub mod gdt;
 mod interrupts;
+pub mod memory;
 pub mod serial;
 pub mod vga_buffer;
 
@@ -68,10 +69,8 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     halt();
 }
 
-
 #[cfg(test)]
 use bootloader::{entry_point, BootInfo};
-
 
 #[cfg(test)]
 entry_point!(test_kernel_main);
