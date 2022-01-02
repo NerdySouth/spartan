@@ -6,14 +6,19 @@
 
 use core::panic::PanicInfo;
 use spartan::println;
+use x86_64::registers::control::Cr3;
+use bootloader::{BootInfo, entry_point};
 
-#[no_mangle] // -> do not mangle name of this function
-pub extern "C" fn _start() -> ! {
+entry_point!(kernel_main);
+
+fn kernel_main(boot_info: &'static BootInfo) -> ! {
     //Entrypoint since the Linker looks for a function
     // named _start (LLVM Linker) by default
     println!("Hello world!");
     //initalization routines
     spartan::init();
+
+
 
     #[cfg(test)]
     test_main();
